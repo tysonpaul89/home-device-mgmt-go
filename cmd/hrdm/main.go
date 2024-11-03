@@ -1,10 +1,8 @@
 package main
 
-import "hrdm/logger"
+import "hrdm/log"
 
 // Main function initalizes, logger, config files, web servers, etc.
 func main() {
-  log := logger.NewLogger()
-  
   log.Info("Hello World!")
 }
