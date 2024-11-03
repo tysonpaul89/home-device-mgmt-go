@@ -1,3 +1,3 @@
-module hotel_room_device_mgmt
+module hrdm
 
 go 1.21.4
