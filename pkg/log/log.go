@@ -2,28 +2,36 @@
 // In future if we want to replace log/slog with any other package then we only need to modify this file
 package log
 
-import "log/slog"
+import (
+	"io"
+	"log/slog"
+	"os"
+
+	"gopkg.in/natefinch/lumberjack.v2"
+)
 
 // Global variable to store the slog.Logger object
 var logger *slog.Logger
 
 // This function is called only once when its imported and is used to initialize the global variable
 func init() {
-	logger := newSlogLogger()
+	logger = newSlogLogger()
 }
 
 // Private function that configures log/slog that will log data to both console and file
-func newSlogLogger() {
-	file, err := os.OpenFile("app.log", os.O_APPEND | os.O_CREATE | os.O_WRONGLY, 0664)
-	if err != nil {
-		fmt.Printf("Failed to open the log file %v\n", err)
-		return
+func newSlogLogger() *slog.Logger {
+	// Using lumberjack package to implement log rotation to avoid memory issues
+	// Lumberjack handles file closure automatically.
+	logFile := &lumberjack.Logger{
+		Filename:   "app.log",
+		MaxSize:    10,   // Max size in MB before rotation
+		MaxBackups: 5,    // Max number of old log files to keep
+		MaxAge:     28,   // Max days to retain old log files
+		Compress:   true, // Compress rotated log files
 	}
-	defer file.Close()
 
-	multiWriter := slog.MultiWriter(os.Stdout, file)
-
-	return slog.New(slog.NewTextHandler(multiWriter))
+	multiWriter := io.MultiWriter(os.Stdout, logFile)
+	return slog.New(slog.NewTextHandler(multiWriter, &slog.HandlerOptions{}))
 }
 
 func Debug(msg string, args ...any) {
