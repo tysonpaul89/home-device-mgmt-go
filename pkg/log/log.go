@@ -44,6 +44,10 @@ func GetMultiWriter() io.Writer {
 
 // Private function that configures log/slog that will log data to both console and file
 func newSlogLogger() *slog.Logger {
+	// TODO:
+	// 1) Need to set log level according to the environment
+	// 2) Change the log format to more human readable one
+	// config.GetEnv("logLevel")
 	return slog.New(slog.NewTextHandler(GetMultiWriter(), &slog.HandlerOptions{}))
 }
 

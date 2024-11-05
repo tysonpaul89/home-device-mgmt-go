@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hrdm/pkg/config" // <-- Don't change this. The config should be loaded first
 	"hrdm/pkg/log"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,10 @@ func main() {
 	multiWriter := log.GetMultiWriter()
 	gin.DefaultWriter = multiWriter      // Sets the writer for Gin's logger
 	gin.DefaultErrorWriter = multiWriter // If you also want to log recovery (panic) to the file
+
+	// ======================== Getting configurations =========================
+
+	log.Info(config.GetEnv("logLevel"))
 
 	// ============ Gin configuration ============
 	r := gin.Default()
