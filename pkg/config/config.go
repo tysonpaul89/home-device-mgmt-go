@@ -1,6 +1,9 @@
 package config
 
 import (
+	"os"
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
@@ -9,13 +12,13 @@ type Config interface {
 	SetEnv(key, value string) error
 }
 
-type ConfigImpl struct {}
+type ConfigImpl struct{}
 
 // Gets the given key data by looking it up in application configuration file and environment variables.
 // Function searches value first in the configuration file and if not found then in environment variables.
-func (c *ConfigImpl) GetEnv(key string) {
+func (c *ConfigImpl) GetEnv(key string) string {
 	// Searches in the configuration files
-	value := strings.TrimSpace(viper.GetSting(key))
+	value := strings.TrimSpace(viper.GetString(key))
 
 	if len(value) > 0 {
 		return value
@@ -23,7 +26,7 @@ func (c *ConfigImpl) GetEnv(key string) {
 
 	// Searches in the environment variables
 	val, ok := os.LookupEnv(key)
-	
+
 	if ok {
 		return val
 	} else {
@@ -31,7 +34,7 @@ func (c *ConfigImpl) GetEnv(key string) {
 	}
 }
 
-// Sets the value of the environment variable named by the key. It returns an error, if any. 
+// Sets the value of the environment variable named by the key. It returns an error, if any.
 func (c *ConfigImpl) Setenv(key, value string) error {
 	return os.Setenv(key, value)
 }
