@@ -6,6 +6,9 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"strings"
+
+	"hrdm/pkg/config"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -44,11 +47,21 @@ func GetMultiWriter() io.Writer {
 
 // Private function that configures log/slog that will log data to both console and file
 func newSlogLogger() *slog.Logger {
-	// TODO:
-	// 1) Need to set log level according to the environment
-	// 2) Change the log format to more human readable one
-	// config.GetEnv("logLevel")
-	return slog.New(slog.NewTextHandler(GetMultiWriter(), &slog.HandlerOptions{}))
+	var logLevel slog.Level
+
+	switch level := strings.ToUpper(config.GetEnv("logLevel")); level {
+	case "DEBUG":
+		logLevel = slog.LevelDebug
+	case "INFO":
+		logLevel = slog.LevelInfo
+	case "WARN":
+		logLevel = slog.LevelWarn
+	case "ERROR":
+		logLevel = slog.LevelError
+	}
+
+	// return slog.New(slog.NewTextHandler(GetMultiWriter(), &slog.HandlerOptions{Level: logLevel}))
+	return slog.New(NewCustomTextHandler(GetMultiWriter(), logLevel))
 }
 
 func Debug(msg string, args ...any) {
